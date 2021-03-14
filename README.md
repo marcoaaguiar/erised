@@ -47,6 +47,14 @@ Setting attributes works even if it was not defined originally.
 proxy.dog.age = 3
 ```
 
+It's also possible to retrieve attributes from the remote object by including a `.retrieve()` at the end of a proxy.
+`.retrieve()` was purposely chosen to avoid name conflict with the underlying object.
+
+```python
+get_future = proxy.dog.age.retrieve()
+print(get_future.result())
+```
+
 Since an process was created, make sure to terminate the process by calling `.terminate()` on the proxy object.
 
 ```python
