@@ -1,15 +1,15 @@
 from __future__ import annotations
-from concurrent.futures import CancelledError
-from typing import Optional
-import typing
 
-from erised.datatypes import Result
+import enum
+import typing
+from concurrent.futures import CancelledError
+from typing import Any, Optional
 
 if typing.TYPE_CHECKING:
-    from erised.proxy import Proxy
+    from erised.proxy import Connector
 
 
-class FutureState:
+class FutureState(enum.Enum):
     PENDING = "PENDING"
     RUNNING = "RUNNING"
     CANCELLED = "CANCELLED"
@@ -18,12 +18,15 @@ class FutureState:
 
 
 class Future:
-    def __init__(self, task_id: int, proxy: Proxy):
+    def __init__(self, task_id: int, connector: Connector):
         self._task_id = task_id
-        self._state: str = FutureState.RUNNING
-        self._result: Optional[Result] = None
+        self._state: FutureState = FutureState.RUNNING
+        self._result: Optional[Any] = None
         self._exception: Optional[Exception] = None
-        self._proxy = proxy
+        self._connector = connector
+
+    def cancel(self) -> bool:
+        raise NotImplementedError("Cancelling is not implemented yet")
 
     def cancelled(self) -> bool:
         """Return True if the future was cancelled."""
@@ -44,9 +47,9 @@ class Future:
             FutureState.FINISHED,
         ]
 
-    def _wait_for_result(self, timeout=None):
-        if self._state == FutureState.RUNNING:
-            self._proxy._get(self._task_id, timeout=timeout)
+    def _wait_for_result(self, timeout: int = None):
+        if self._state in [FutureState.PENDING, FutureState.RUNNING]:
+            self._connector._get(self._task_id, timeout=timeout)
 
     def __get_result(self):
         if self._exception:
@@ -54,18 +57,16 @@ class Future:
         else:
             return self._result
 
-    def result(self, timeout=None):
+    def result(self, timeout: int = None):
         if self._state in [FutureState.CANCELLED, FutureState.CANCELLED_AND_NOTIFIED]:
             raise CancelledError()
-        if self._state in [FutureState.PENDING, FutureState.RUNNING]:
-            self._wait_for_result(timeout=timeout)
 
+        self._wait_for_result(timeout=timeout)
         return self.__get_result()
 
-    def exception(self, timeout=None):
+    def exception(self, timeout: int = None):
         if self._state in [FutureState.CANCELLED, FutureState.CANCELLED_AND_NOTIFIED]:
             raise CancelledError()
-        if self._state in [FutureState.PENDING, FutureState.RUNNING]:
-            self._wait_for_result(timeout=timeout)
-        elif self._state == FutureState.FINISHED:
-            return self._exception
+
+        self._wait_for_result(timeout=timeout)
+        return self._exception
