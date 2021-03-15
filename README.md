@@ -52,7 +52,7 @@ It's also possible to retrieve attributes from the remote object by including a 
 
 ```python
 get_future = proxy.dog.age.retrieve()
-print(get_future.result())
+print(get_future.result())  # 3
 ```
 
 Since an process was created, make sure to terminate the process by calling `.terminate()` on the proxy object.
