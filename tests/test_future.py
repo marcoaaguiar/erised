@@ -4,9 +4,9 @@ import pytest
 from pytest_mock import MockerFixture
 
 from erised.connector import Connector
-from erised.task import CallTask, Task
 from erised.future import Future, FutureState
 from erised.proxy import Proxy
+from erised.task import CallTask, Task
 
 
 @pytest.fixture

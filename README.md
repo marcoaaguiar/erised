@@ -27,7 +27,7 @@ Create your objects and do wathever operations with it, when you want to send it
 ```python
 person = Person()
 person.dog = Dog()
- 
+
 proxy = Proxy(obj=person)
 ```
 
@@ -42,7 +42,7 @@ print(call_future.result())  # WOOF-WOOF
 
 Attributes can be set into the remote object by setting the attribute in the proxy object.
 Setting attributes works even if it was not defined originally.
-  
+
 ```python
 proxy.dog.age = 3
 ```

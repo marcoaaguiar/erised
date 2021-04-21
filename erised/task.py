@@ -47,7 +47,7 @@ class CallTask(Task):
 
 
 @dataclass
-class GetArgTask(Task):
+class GetAttrTask(Task):
     name: str
 
     def do(self, obj: Any) -> TaskResult:
@@ -65,7 +65,7 @@ class GetArgTask(Task):
 
 
 @dataclass
-class SetArgTask(Task):
+class SetAttrTask(Task):
     name: str
     value: Any
 

@@ -51,20 +51,20 @@ class Future:
         if self._state in [FutureState.PENDING, FutureState.RUNNING]:
             self._connector._get(self._task_id, timeout=timeout)
 
-    def __get_result(self):
+    def __get_result(self) -> Any:
         if self._exception:
             raise self._exception
         else:
             return self._result
 
-    def result(self, timeout: int = None):
+    def result(self, timeout: int = None) -> Any:
         if self._state in [FutureState.CANCELLED, FutureState.CANCELLED_AND_NOTIFIED]:
             raise CancelledError()
 
         self._wait_for_result(timeout=timeout)
         return self.__get_result()
 
-    def exception(self, timeout: int = None):
+    def exception(self, timeout: int = None) -> Optional[Exception]:
         if self._state in [FutureState.CANCELLED, FutureState.CANCELLED_AND_NOTIFIED]:
             raise CancelledError()
 

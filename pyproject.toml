@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "erised"
-version = "0.1.0"
+version = "0.1.1"
 description = ""
 authors = ["Marco Aguiar <marcoaaguiar@gmail.com>"]
 
@@ -17,6 +17,7 @@ pytest-mock = "^3.5.1"
 pytest-cov = "^2.11.1"
 pyflakes = "^2.3.0"
 ipdb = "^0.13.6"
+pre-commit = "^2.12.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

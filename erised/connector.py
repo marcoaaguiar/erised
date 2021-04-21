@@ -7,7 +7,7 @@ from typing import Any, Dict, Iterator, Optional, Tuple
 
 from erised.future import Future, FutureState
 from erised.remote import run
-from erised.task import CallTask, GetArgTask, SetArgTask, Task, TaskResult
+from erised.task import CallTask, GetAttrTask, SetAttrTask, Task, TaskResult
 
 
 class Connector:
@@ -28,7 +28,7 @@ class Connector:
 
         self._process.start()
 
-    def submit(
+    def call(
         self, attr: str, args: Tuple[Any, ...] = None, kwargs: Dict[str, Any] = None
     ) -> Future:
         if args is None:
@@ -41,24 +41,24 @@ class Connector:
             kwargs=kwargs or dict(),
         )
         self._queue_out.put(task)
-        return self._create_future(task)
+        return self._create_future(task.id)
 
-    def setattr(self, attr: str, name: str, value: Any):
-        task = SetArgTask(attr=attr, name=name, value=value)
+    def setattr(self, attr: str, name: str, value: Any) -> Future:
+        task = SetAttrTask(attr=attr, name=name, value=value)
         self._queue_out.put(task)
-        return self._create_future(task)
+        return self._create_future(task.id)
 
     def getattr(self, attr: str, name: str) -> Future:
-        task = GetArgTask(attr=attr, name=name)
+        task = GetAttrTask(attr=attr, name=name)
         self._queue_out.put(task)
-        return self._create_future(task)
+        return self._create_future(task.id)
 
     def terminate(self):
         self._process.terminate()
 
-    def _create_future(self, task: Task) -> Future:
-        future = Future(task_id=task.id, connector=self)
-        self._waiting_futures[task.id] = future
+    def _create_future(self, task_id: int) -> Future:
+        future = Future(task_id=task_id, connector=self)
+        self._waiting_futures[task_id] = future
         return future
 
     def _get(self, task_id: int, timeout: Optional[int] = None):

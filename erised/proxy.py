@@ -60,7 +60,7 @@ class Proxy:
             self.__connector.setattr(self.__path(), name, value)
 
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
-        return self.__connector.submit(self.__path(), args, kwargs)
+        return self.__connector.call(self.__path(), args, kwargs)
 
     def __path(self) -> str:
         return f"{self.__prefix}.{self.__name}" if self.__prefix else self.__name

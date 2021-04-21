@@ -1,5 +1,5 @@
-from pytest_mock import MockerFixture
 import pytest
+from pytest_mock import MockerFixture
 
 from erised.proxy import Proxy
 
@@ -94,7 +94,7 @@ def test_setattr_calls_connector(mocker: MockerFixture):
 
 def test_call_calls_connector(mocker: MockerFixture):
     connector = mocker.Mock()
-    connector.submit = submit = mocker.Mock()
+    connector.call = call = mocker.Mock()
 
     proxy = Proxy(
         obj=None,
@@ -105,6 +105,4 @@ def test_call_calls_connector(mocker: MockerFixture):
 
     proxy.child.method("some_string", 42, key="value")
 
-    submit.assert_called_once_with(
-        "child.method", ("some_string", 42), {"key": "value"}
-    )
+    call.assert_called_once_with("child.method", ("some_string", 42), {"key": "value"})
