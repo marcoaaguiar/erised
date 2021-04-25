@@ -61,15 +61,16 @@ class Connector:
         self._waiting_futures[task_id] = future
         return future
 
-    def _get(self, task_id: int, timeout: Optional[int] = None):
-        if len(self._waiting_futures) == 0 or not min(
-            self._waiting_futures
-        ) <= task_id <= max(self._waiting_futures):
+    def _get(self, task_id: Optional[int] = None, timeout: Optional[int] = None):
+        if len(self._waiting_futures) == 0 or (
+            task_id is not None
+            and not min(self._waiting_futures) <= task_id <= max(self._waiting_futures)
+        ):
             raise ValueError(
                 f"Task wasn't set to run, or have already been run: task_id = {task_id}"
             )
 
-        while True:
+        while len(self._waiting_futures) > 0:
             task_result = self._queue_in.get(timeout=timeout)
 
             future = self._waiting_futures.pop(task_result.task_id)
@@ -79,6 +80,9 @@ class Connector:
 
             if task_result.task_id == task_id:
                 return
+
+    def empty_queue(self):
+        self._get()
 
 
 class LocalConnector(Connector):

@@ -70,3 +70,6 @@ class Proxy:
 
     def retrieve(self) -> Future:
         return self.__connector.getattr(self.__prefix, self.__name)
+
+    def wait_all_futures(self):
+        self.__connector.empty_queue()
